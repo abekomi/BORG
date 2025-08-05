@@ -4,9 +4,6 @@
 	"description": "Better Overwatch Robot for Groupme, a FLOSS alternative to GORT, which overcomes its limited featureset and closed-source freemium model",
 	"main": "index.js",
 	"type": "module",
-	"engines": {
-		"node": ">=16"
-  	},
 	"scripts": {
 		"start": "node index.js"
 	},
@@ -17,7 +14,7 @@
 		"request": "^2.88.0"
 	},
 	"engines": {
-		"node": "0.10.x"
+		"node": ">=16"
 	},
 	"repository": {
 		"type": "git",
