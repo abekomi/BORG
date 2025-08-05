@@ -7,7 +7,7 @@ import { receiver } from './receiver.js';
 import express from 'express';
 import bodyParser from 'body-parser';
 
-const app = express();
+export const app = express();  // export here
 app.use(bodyParser.json());
 
 getData((data) => {
