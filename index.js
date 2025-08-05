@@ -1,3 +1,4 @@
+console.log('Running Node version:', process.version);
 import {getData} from "./utils";
 import {receiver} from "./receiver";
 
