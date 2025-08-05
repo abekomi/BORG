@@ -1,18 +1,22 @@
-import { app } from "./index.js";
-import { commandsLookup } from "./commands.js";
+// receiver.js
+import { app } from './index.mjs';
+import { commandsLookup } from './commands.js';
 
-export function receiver(token, botId) {
-  app.post("/" + token, function (req, res) {
-    const command = req.body.text.split(" ");
+export function receiver(token) {
+  app.post('/' + token, (req, res) => {
+    const text = req.body.text || '';
+    const commandParts = text.split(' ');
+    
+    if (commandParts[0] === 'BORG' && commandParts[1] in commandsLookup) {
+      // Pass bot_id from environment variables along with token and group_id
+      const bot_id = process.env.BOT_ID || null;
 
-    if (command[0] === "BORG" && command[1] in commandsLookup) {
-      commandsLookup[command[1]].call(command.slice(2).join(" "), {
+      commandsLookup[commandParts[1]].call(text, {
         token: token,
-        bot_id: botId,
-        gid: req.body.group_id
+        gid: req.body.group_id,
+        bot_id: bot_id
       });
     }
-
-    res.sendStatus(200);
+    res.status(200).send('OK');
   });
 }
