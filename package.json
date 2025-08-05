@@ -2,10 +2,10 @@
 	"name": "borg",
 	"version": "0.0.0",
 	"description": "Better Overwatch Robot for Groupme, a FLOSS alternative to GORT, which overcomes its limited featureset and closed-source freemium model",
-	"main": "index.js",
+	"main": "index.mjs",
 	"type": "module",
 	"scripts": {
-		"start": "node index.js"
+		"start": "node index.mjs"
 	},
 	"dependencies": {
  		 "body-parser": "^1.20.2",
