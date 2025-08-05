@@ -1,5 +1,12 @@
-//misc helper functions
-let fs = require("fs");
+// utils.js — ESM-compatible
+
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Recreate __dirname in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * Reads data from a JSON database
@@ -7,7 +14,8 @@ let fs = require("fs");
  * @param {string} file - Database name
  */
 export function getData(callback, file) {
-	fs.readFile(__dirname + "/" + file + ".json", function(err, d) {
+	fs.readFile(path.join(__dirname, `${file}.json`), (err, d) => {
+		if (err) throw err;
 		callback(JSON.parse(d));
 	});
 }
@@ -18,18 +26,21 @@ export function getData(callback, file) {
  * @param {string} file - Database name
  */
 export function saveData(data, file) {
-	fs.writeFileSync(__dirname + "/" + file + ".json", JSON.stringify(data, null, "\t"));
+	fs.writeFileSync(
+		path.join(__dirname, `${file}.json`),
+		JSON.stringify(data, null, "\t")
+	);
 }
 
 /**
- * Counts occurences of a value in an array
+ * Counts occurrences of a value in an array
  * @param {array} arr - The array to search
  * @param {*} search - The value to search for
- * @returns {number} occurences
+ * @returns {number} occurrences
  */
 export function occurences(arr, search) {
 	let obj = {};
-	for(let i = 0; i < arr.length; i++) {
+	for (let i = 0; i < arr.length; i++) {
 		obj[arr[i]] = (obj[arr[i]] || 0) + 1;
 	}
 	return obj[search] || 0;
@@ -46,12 +57,15 @@ export function charSplit(string, charmax, charbreak) {
 	let str = string.split(charbreak);
 	let starr = [""];
 	let stin = 0;
-	while(str.length > 0) {
-		if(starr[stin].length + str[0].length + charbreak.length > charmax) {
+	while (str.length > 0) {
+		if (
+			starr[stin].length + str[0].length + charbreak.length >
+			charmax
+		) {
 			stin++;
 			starr[stin] = "";
 		}
-		starr[stin] += string[0] + charbreak;
+		starr[stin] += str[0] + charbreak;
 		str.splice(0, 1);
 	}
 	return starr;
@@ -66,21 +80,21 @@ export function shuffle(array) {
 	let m = array.length,
 		t,
 		i;
-	while(m) {
+	while (m) {
 		i = Math.floor(Math.random() * m--);
 		t = array[m];
 		array[m] = array[i];
 		array[i] = t;
 	}
 	let a = [];
-	for(let i = 0; i < array.length; i++) {
+	for (let i = 0; i < array.length; i++) {
 		a[i] = array[i];
 	}
 	return a;
 }
 
 /**
- * Replaces all instances of search in str with replacement, without having to escape special characters for regex
+ * Replaces all instances of search in str with replacement
  * @param {string} str
  * @param {string} search
  * @param {string} replacement
