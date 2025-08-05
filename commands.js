@@ -1,58 +1,57 @@
 // commands.js
-import fetch from 'node-fetch'; // or your preferred HTTP client
+import fetch from 'node-fetch';
 
-export let commandsLookup = {};
-
-/** The template for BORG commands */
-export class Command {
-  /**
-   * 
-   * @param {[string]} aliases - The names of the command
-   * @param {RegExp} parameters - A regex to match command parameters
-   * @param {function} callback - The function to run when the command is called
-   */
-  constructor(aliases, parameters, callback) {
-    this.parameters = parameters;
-    this.callback = callback;
-    for (let i in aliases) commandsLookup[aliases[i]] = this;
-  }
-
-  call(parameterstring, receiver) {
-    if (this.parameters.test(parameterstring)) this.callback(this.parameters.exec(parameterstring), receiver);
-  }
-}
-
-/**
- * Example function to send a message to GroupMe using bot ID and token
- * @param {string} bot_id 
- * @param {string} text 
- */
-async function sendMessage(bot_id, text) {
-  const url = 'https://api.groupme.com/v3/bots/post';
-  const body = {
-    bot_id,
-    text
-  };
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    if (!response.ok) {
-      console.error('Failed to send message:', response.statusText);
+export const commandsLookup = {
+  hello: {
+    call: (text, { bot_id }) => {
+      send(bot_id, "👋 Hello, I am BORG.");
     }
-  } catch (err) {
-    console.error('Error sending message:', err);
-  }
-}
+  },
 
-// Sample command that replies "Hello, World!"
-new Command(
-  ['hello', 'hi'],             // aliases
-  /^BORG (hello|hi)$/i,        // regex to match "BORG hello" or "BORG hi"
-  (matchGroups, receiver) => { // callback
-    const bot_id = receiver.bot_id;
-    sendMessage(bot_id, "Hello, World!");
+  time: {
+    call: (text, { bot_id }) => {
+      const now = new Date().toLocaleString();
+      send(bot_id, `🕒 Current time: ${now}`);
+    }
+  },
+
+  flip: {
+    call: (text, { bot_id }) => {
+      const result = Math.random() > 0.5 ? 'Heads' : 'Tails';
+      send(bot_id, `🪙 Coin flip: ${result}`);
+    }
+  },
+
+  roll: {
+    call: (text, { bot_id }) => {
+      const roll = Math.floor(Math.random() * 6) + 1;
+      send(bot_id, `🎲 You rolled a ${roll}`);
+    }
+  },
+
+  echo: {
+    call: (text, { bot_id }) => {
+      const message = text.split(' ').slice(2).join(' ') || '...';
+      send(bot_id, `🗣️ ${message}`);
+    }
+  },
+
+  help: {
+    call: (text, { bot_id }) => {
+      const cmds = Object.keys(commandsLookup).join(', ');
+      send(bot_id, `📜 Commands: ${cmds}`);
+    }
   }
-);
+};
+
+// helper function
+function send(bot_id, message) {
+  fetch('https://api.groupme.com/v3/bots/post', {
+    method: 'POST',
+    body: JSON.stringify({
+      bot_id,
+      text: message
+    }),
+    headers: { 'Content-Type': 'application/json' }
+  }).catch(err => console.error("Failed to send message:", err));
+}
